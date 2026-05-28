@@ -132,3 +132,4 @@ C:\Users\ANYTHING\RiderProjects\LibraryManagementAPI\obj\Debug\net8.0\refint\Lib
 C:\Users\ANYTHING\RiderProjects\LibraryManagementAPI\obj\Debug\net8.0\LibraryManagementAPI.pdb
 C:\Users\ANYTHING\RiderProjects\LibraryManagementAPI\obj\Debug\net8.0\LibraryManagementAPI.genruntimeconfig.cache
 C:\Users\ANYTHING\RiderProjects\LibraryManagementAPI\obj\Debug\net8.0\ref\LibraryManagementAPI.dll
+C:\Users\ANYTHING\RiderProjects\LibraryManagementAPI\obj\Debug\net8.0\LibraryManagementAPI.sourcelink.json

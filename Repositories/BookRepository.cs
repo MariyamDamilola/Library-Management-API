@@ -1,7 +1,6 @@
 ﻿using LibraryManagementAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagementAPI.Models;
-using LibraryManagementAPI.Responses;
 
 namespace LibraryManagementAPI.Repositories;
 
@@ -14,109 +13,124 @@ public class BookRepository : IBookRepository
         _dbContext = dbContext;
     }
     
-    public async Task<ApiResponse<IEnumerable<Book>>> GetAllBooks()
+    public async Task<IEnumerable<Book>> GetAllBooks()
     {
         var books = await _dbContext.Books.ToListAsync();
-        return ApiResponse<IEnumerable<Book>>.CreateSuccess(books, "All books retrieved successfully.");
-        
+        return books;
+
     }
 
-    public async Task<ApiResponse<Book>> GetBookById(int id)
+    public async Task<Book> GetBookById(int id)
     {
         var book = await _dbContext.Books.FirstOrDefaultAsync(x=> x.Id == id);
         if (book == null)
         {
-            return ApiResponse<Book>.CreateFailure($"Book with id {id} not found");
+            throw new Exception($"Book with id {id} not found");
         }
-        return ApiResponse<Book>.CreateSuccess(book, "Book retrieved successfully.");
+
+        return book;
     }
 
-    public async Task<ApiResponse<Book>> CreateBook(Book book)
+    public async Task<Book> CreateBook(CreateBookDTO createBookDto)
     {
-
-        if (book.Price <= 0)
-        {
-            return ApiResponse<Book>.CreateFailure("Price must be greater than zero");
-        }
-
-        if (book.Quantity < 0)
-        {
-            return ApiResponse<Book>.CreateFailure("Quantity cannot be negative");
-        }
-        var bookexist = await _dbContext.Books.AnyAsync(x=> x.Title == book.Title);
+        var bookexist = await _dbContext.Books.AnyAsync(x=> x.Title == createBookDto.Title);
         if (bookexist)
         {
-            return ApiResponse<Book>.CreateFailure($"Book with title {book.Title} already exists");
+            throw new Exception($"Book with title {createBookDto.Title} already exists");
         }
-        
-        book.CreatedAt = DateTime.Now;
+
+        if (createBookDto.Price <= 0)
+        {
+            throw new Exception("Price must be greater than zero");
+        }
+
+        if (createBookDto.Quantity < 0)
+        {
+            throw new Exception("Quantity cannot be negative");
+        }
+
+        var book = new Book()
+        {
+            Id = Random.Shared.Next(100, 999),
+
+            Title = createBookDto.Title,
+
+            Author = createBookDto.Author,
+
+            Category = createBookDto.Category,
+
+            Price = createBookDto.Price,
+
+            Quantity = createBookDto.Quantity,
+
+            CreatedAt = DateTime.Now,
+        };
+      
+       
 
         await _dbContext.Books.AddAsync(book);
         await _dbContext.SaveChangesAsync();
         
-        return ApiResponse<Book>.CreateSuccess(book, "Book created successfully.");
+        return book;
     }
 
-    public async Task<ApiResponse<Book>> UpdateBook(Book book)
+    public async Task<Book> UpdateBook(Book book)
     {
         if (book.Price <= 0)
         {
-            return ApiResponse<Book>.CreateFailure("Price must be greater than zero");
+            throw new Exception("Price must be greater than zero");
         }
 
         if (book.Quantity < 0)
         {
-            return ApiResponse<Book>.CreateFailure("Quantity cannot be negative");
+            throw new Exception("Quantity cannot be negative");
         }
         
         var bookExist = await _dbContext.Books.FirstOrDefaultAsync(x=> x.Id == book.Id);
         if (bookExist == null)
         {
-            return ApiResponse<Book>.CreateFailure($"Book with id {book.Id} not found");
+            throw new Exception($"Book with id {book.Id} not found");
         }
         _dbContext.Books.Update(book);
         await _dbContext.SaveChangesAsync();
-        return ApiResponse<Book>.CreateSuccess(book, "Book updated successfully.");
+        return book;
     }
 
-    public async Task<ApiResponse<bool>> DeleteBook(int id)
+    public async Task<bool> DeleteBook(int id)
     {
         var book = await _dbContext.Books.FirstOrDefaultAsync(x=> x.Id == id);
         if (book == null)
         {
-            return ApiResponse<bool>.CreateFailure($"Book with id {id} not found");
+            throw new Exception($"Book with id {id} not found");
         }
         _dbContext.Books.Remove(book);
         await _dbContext.SaveChangesAsync();
-        return ApiResponse<bool>.CreateSuccess(true, "Book deleted successfully.");
+        return true;
     }
 
-    public async Task<ApiResponse<IEnumerable<Book>>> SearchBooks(string search)
+    public async Task<IEnumerable<Book>> SearchBooks(string search)
     {
         if (string.IsNullOrEmpty(search))
         {
-            var allBooks = await _dbContext.Books.ToListAsync();
-            return ApiResponse<IEnumerable<Book>>.CreateSuccess(allBooks, "Search query empty. Returning all books.");
+            return await _dbContext.Books.ToListAsync();
+           
         }
-        var books = await _dbContext.Books.Where(x => EF.Functions.Like(x.Title, $"%{search}%")).ToListAsync();
+        return await _dbContext.Books.Where(x => EF.Functions.Like(x.Title, $"%{search}%")).ToListAsync();
         
-        return ApiResponse<IEnumerable<Book>>.CreateSuccess(books, $"Found {books.Count} books matching '{search}'.");
     }
 
-    public async Task<ApiResponse<IEnumerable<Book>>> GetBookByCategory(string category)
+    public async Task<IEnumerable<Book>> GetBookByCategory(string category)
     {
         if (string.IsNullOrEmpty(category))
         {
-            return ApiResponse<IEnumerable<Book>>.CreateFailure("Category cannot be empty");
+            throw new Exception("Category cannot be empty");
         }
-        var books = await _dbContext.Books.Where(x => x.Category == category).ToListAsync();
-        return ApiResponse<IEnumerable<Book>>.CreateSuccess(books, $"Found {books.Count} books in category '{category}'.");
+        return await _dbContext.Books.Where(x => x.Category == category).ToListAsync();
         
     }
 
-    public async Task<ApiResponse<IEnumerable<Book>>> GetBookOutOfStock()
+    public async Task<IEnumerable<Book>> GetBookOutOfStock()
     {
-        var books = await _dbContext.Books.Where(x => x.Quantity == 0).ToListAsync();
-        return ApiResponse<IEnumerable<Book>>.CreateSuccess(books, "Books out of stock retrieved successfully.");
+        return await _dbContext.Books.Where(x => x.Quantity == 0).ToListAsync();
     }
 }

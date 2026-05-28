@@ -31,10 +31,10 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("CreateBook")]
-    public async Task<IActionResult> CreateBook(Book book)
+    public async Task<IActionResult> CreateBook(CreateBookDTO createBookDto)
     {
-        var createdBook = await _bookRepository.CreateBook(book);
-        return Ok(book);
+        var createdBook = await _bookRepository.CreateBook(createBookDto);
+        return Ok(createdBook);
     }
 
     [HttpPut("UpdateBook")]
