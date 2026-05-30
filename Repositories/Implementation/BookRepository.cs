@@ -91,9 +91,16 @@ public class BookRepository : IBookRepository
         {
             throw new Exception($"Book with id {book.Id} not found");
         }
-        _dbContext.Books.Update(book);
+        
+        bookExist.Title = book.Title;
+        bookExist.Author = book.Author;
+        bookExist.Category = book.Category;
+        bookExist.Price = book.Price;
+        bookExist.Quantity = book.Quantity;
+        
+        
         await _dbContext.SaveChangesAsync();
-        return book;
+        return bookExist;
     }
 
     public async Task<bool> DeleteBook(int id)

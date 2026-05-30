@@ -23,10 +23,10 @@ public class BookController : ControllerBase
         return Ok(books);
     }
 
-    [HttpGet("GetBookById/{Id}")]
-    public async Task<IActionResult> GetBookById(int Id)
+    [HttpGet("GetBookById/{id}")]
+    public async Task<IActionResult> GetBookById(int id)
     {
-        var book = await _bookRepository.GetBookById(Id);
+        var book = await _bookRepository.GetBookById(id);
         return Ok(book);
     }
 
@@ -44,7 +44,7 @@ public class BookController : ControllerBase
             return Ok(updatedBook);
     }
 
-    [HttpDelete("DeleteBook/{Id}")]
+    [HttpDelete("DeleteBook/{id}")]
     public async Task<IActionResult> DeleteBook(int id)
     {
         var isDeleted = await _bookRepository.DeleteBook(id);
