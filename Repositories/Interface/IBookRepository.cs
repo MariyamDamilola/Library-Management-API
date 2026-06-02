@@ -12,7 +12,7 @@ public interface IBookRepository
     
     Task<Book> CreateBook(CreateBookDTO createBookDto);
     
-    Task<Book> UpdateBook(Book book);
+    Task<Book> UpdateBook(int id, CreateBookDTO createBookDto);
     
     Task<bool> DeleteBook(int id);
     

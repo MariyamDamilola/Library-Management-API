@@ -13,10 +13,18 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IBookRepository, BookRepository>(); 
 
+builder.Services.AddScoped<IContactRepository, ContactRepository>(); 
 
+
+/*
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+*/
+
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabaseConnection")));
 
 
 var app = builder.Build();

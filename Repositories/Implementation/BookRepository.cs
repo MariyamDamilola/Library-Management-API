@@ -51,7 +51,6 @@ public class BookRepository : IBookRepository
 
         var book = new Book()
         {
-            Id = Random.Shared.Next(100, 999),
 
             Title = createBookDto.Title,
 
@@ -74,29 +73,29 @@ public class BookRepository : IBookRepository
         return book;
     }
 
-    public async Task<Book> UpdateBook(Book book)
+    public async Task<Book> UpdateBook(int id, CreateBookDTO createBookDto)
     {
-        if (book.Price <= 0)
+        if (createBookDto.Price <= 0)
         {
             throw new Exception("Price must be greater than zero");
         }
 
-        if (book.Quantity < 0)
+        if (createBookDto.Quantity < 0)
         {
             throw new Exception("Quantity cannot be negative");
         }
         
-        var bookExist = await _dbContext.Books.FirstOrDefaultAsync(x=> x.Id == book.Id);
+        var bookExist = await _dbContext.Books.FirstOrDefaultAsync(x=> x.Id == id);
         if (bookExist == null)
         {
-            throw new Exception($"Book with id {book.Id} not found");
+            throw new Exception($"Book with id {id} not found");
         }
         
-        bookExist.Title = book.Title;
-        bookExist.Author = book.Author;
-        bookExist.Category = book.Category;
-        bookExist.Price = book.Price;
-        bookExist.Quantity = book.Quantity;
+        bookExist.Title = createBookDto.Title;
+        bookExist.Author = createBookDto.Author;
+        bookExist.Category = createBookDto.Category;
+        bookExist.Price = createBookDto.Price;
+        bookExist.Quantity = createBookDto.Quantity;
         
         
         await _dbContext.SaveChangesAsync();
